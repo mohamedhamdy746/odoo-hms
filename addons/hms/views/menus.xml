@@ -18,5 +18,6 @@
               name="Doctors"
               parent="hms_menu_root"
               action="hms_doctors_action"
+              groups="hms.group_hms_manager"
               sequence="30"/>
 </odoo>

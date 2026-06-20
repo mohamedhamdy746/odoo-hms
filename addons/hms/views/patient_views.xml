@@ -45,7 +45,7 @@
                         <group string="Relations">
                             <field name="department_id" domain="[('is_opened', '=', True)]"/>
                             <field name="department_capacity"/>
-                            <field name="doctor_ids" widget="many2many_tags" readonly="not department_id"/>
+                            <field name="doctor_ids" widget="many2many_tags" readonly="not department_id" groups="hms.group_hms_manager"/>
                         </group>
                     </group>
                     <notebook>

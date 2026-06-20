@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Patient Status Report Action -->
+    <record id="action_report_patient_status" model="ir.actions.report">
+        <field name="name">Patient Status Report</field>
+        <field name="model">hms.patient</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">hms.report_patient_status_template</field>
+        <field name="report_file">hms.report_patient_status_template</field>
+        <field name="print_report_name">'Patient Status - %s' % (object.first_name)</field>
+        <field name="binding_model_id" ref="model_hms_patient"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Patient Status Report Qweb Template -->
+    <template id="report_patient_status_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; padding: 20px;">
+                        <!-- Report Header -->
+                        <div class="row align-items-center mb-4">
+                            <div class="col-8">
+                                <h1 style="color: #d9534f; font-size: 32px; font-weight: bold; margin: 0;">Patient Status Report</h1>
+                            </div>
+                            <div class="col-4 text-end">
+                                <t t-if="doc.image">
+                                    <img t-att-src="image_data_uri(doc.image)" style="max-height: 120px; max-width: 120px; border: 2px solid #ddd; border-radius: 4px; padding: 2px;"/>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- Patient Info Section -->
+                        <div class="row mt-4" style="border: 1px solid #eee; border-radius: 4px; padding: 15px; background-color: #fcfcfc;">
+                            <!-- Left Column -->
+                            <div class="col-6">
+                                <table class="table table-borderless" style="margin-bottom: 0;">
+                                    <tr>
+                                        <td style="padding: 6px 0; width: 35%; font-weight: bold; color: #555;">Name:</td>
+                                        <td style="padding: 6px 0; color: #111;">
+                                            <span t-field="doc.first_name"/> <span t-field="doc.last_name"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px 0; font-weight: bold; color: #555;">Age:</td>
+                                        <td style="padding: 6px 0; color: #111;"><span t-field="doc.age"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px 0; font-weight: bold; color: #555;">Department:</td>
+                                        <td style="padding: 6px 0; color: #111;"><span t-field="doc.department_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px 0; font-weight: bold; color: #555;">Doctors:</td>
+                                        <td style="padding: 6px 0; color: #111;">
+                                            <span t-esc="', '.join(doc.doctor_ids.mapped('name'))"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <!-- Right Column -->
+                            <div class="col-6">
+                                <table class="table table-borderless" style="margin-bottom: 0;">
+                                    <tr>
+                                        <td style="padding: 6px 0; width: 35%; font-weight: bold; color: #555;">Birth date:</td>
+                                        <td style="padding: 6px 0; color: #111;">
+                                            <span t-field="doc.birth_date" t-options="{'widget': 'date'}"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px 0; font-weight: bold; color: #555;">PCR / CR Ratio:</td>
+                                        <td style="padding: 6px 0; color: #111;">
+                                            <t t-if="doc.pcr">
+                                                <span>Yes (CR Ratio: <span t-field="doc.cr_ratio"/>)</span>
+                                            </t>
+                                            <t t-else="">
+                                                <span>No</span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px 0; font-weight: bold; color: #555;">Blood Type:</td>
+                                        <td style="padding: 6px 0; color: #111;"><span t-field="doc.blood_type"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px 0; font-weight: bold; color: #555;">Email:</td>
+                                        <td style="padding: 6px 0; color: #111;"><span t-field="doc.email"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Log History Section -->
+                        <div class="mt-5">
+                            <h3 style="color: #d9534f; font-size: 20px; font-weight: bold; margin-bottom: 15px; border-bottom: 2px solid #d9534f; padding-bottom: 5px;">Log History</h3>
+                            <table class="table table-bordered mt-2" style="border-collapse: collapse; width: 100%;">
+                                <thead>
+                                    <tr style="background-color: #007bff; color: white;">
+                                        <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">User</th>
+                                        <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">Date</th>
+                                        <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">Info</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="doc.log_ids" t-as="log">
+                                        <tr style="background-color: #f9f9f9;">
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><span t-field="log.created_by.name"/></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><span t-field="log.date" t-options="{'widget': 'datetime'}"/></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><span t-field="log.description"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
