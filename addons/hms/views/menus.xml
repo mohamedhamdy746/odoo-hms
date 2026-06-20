@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="hms_menu_root" name="HMS"/>
+
+    <menuitem id="hms_menu_patients"
+              name="Patients"
+              parent="hms_menu_root"
+              action="hms_patient_action"
+              sequence="10"/>
+
+    <menuitem id="hms_menu_departments"
+              name="Departments"
+              parent="hms_menu_root"
+              action="hms_department_action"
+              sequence="20"/>
+
+    <menuitem id="hms_menu_doctors"
+              name="Doctors"
+              parent="hms_menu_root"
+              action="hms_doctors_action"
+              sequence="30"/>
+</odoo>
