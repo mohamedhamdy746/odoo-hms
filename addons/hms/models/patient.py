@@ -31,6 +31,7 @@ class HmsPatient(models.Model):
     image = fields.Image(string='Image')
     address = fields.Text(string='Address')
     age = fields.Integer(string='Age', compute='_compute_age', store=True)
+    email = fields.Char(string='Email')
 
     # Relational fields for Lab 2
     department_id = fields.Many2one(
@@ -62,6 +63,11 @@ class HmsPatient(models.Model):
         default='undetermined',
     )
 
+    _sql_constraints = [
+        ('unique_patient_email', 'UNIQUE(email)', 'The patient email must be unique!')
+    ]
+
+
     @api.depends('birth_date')
     def _compute_age(self):
         today = date.today()
@@ -83,6 +89,15 @@ class HmsPatient(models.Model):
         for record in self:
             if record.department_id and not record.department_id.is_opened:
                 raise ValidationError("You cannot choose a closed department.")
+
+    @api.constrains('email')
+    def _check_valid_email(self):
+        import re
+        email_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+        for record in self:
+            if record.email and not re.match(email_regex, record.email):
+                raise ValidationError("Please enter a valid email address.")
+
 
     @api.onchange('age')
     def _onchange_age(self):
